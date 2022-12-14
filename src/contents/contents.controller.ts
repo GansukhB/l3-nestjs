@@ -8,16 +8,17 @@ import {
   Put,
 } from '@nestjs/common';
 import Content from 'src/models/Content.entity';
+import ContentBody from './contents.dto';
 
 @Controller('contents')
 export class ContentsController {
   @Get()
-  async getList(): Promise<any> {
+  async getList(): Promise<Content[]> {
     const contents = await Content.findAll();
     return contents;
   }
   @Post()
-  async createPost(@Body() body: any): Promise<any> {
+  async createPost(@Body() body: any): Promise<Content> {
     const title = body.title;
     const contentBody = body.body;
 
@@ -29,7 +30,10 @@ export class ContentsController {
   }
 
   @Put('/:id')
-  async updatePost(@Body() body: any, @Param() params: any) {
+  async updatePost(
+    @Body() body: ContentBody,
+    @Param() params: any,
+  ): Promise<Content> {
     const id = params.id;
     const title = body.title;
     const contentBody = body.body;
@@ -44,7 +48,7 @@ export class ContentsController {
   }
 
   @Delete('/:id')
-  async deleteContent(@Param() params: any) {
+  async deleteContent(@Param() params: any): Promise<String> {
     try {
       const id = params.id;
       const content = await Content.findByPk(id);

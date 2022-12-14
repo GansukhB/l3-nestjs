@@ -2,7 +2,7 @@ import { Table, Column, Model, HasMany } from 'sequelize-typescript';
 import { Col } from 'sequelize/types/utils';
 
 @Table({
-  tableName: 'content',
+  tableName: 'contents',
 })
 class Content extends Model {
   @Column

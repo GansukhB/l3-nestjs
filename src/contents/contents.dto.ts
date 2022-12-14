@@ -6,4 +6,11 @@ interface ContentBody {
   updatedAt?: Date;
 }
 
-export default ContentBody;
+interface ContentQueryParams {
+  orderBy?: string;
+  limit?: number;
+  offset?: number;
+  orderType?: string;
+}
+
+export { ContentQueryParams, ContentBody };

@@ -6,15 +6,26 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import Content from 'src/models/Content.entity';
-import ContentBody from './contents.dto';
+import { ContentQueryParams, ContentBody } from './contents.dto';
 
 @Controller('contents')
 export class ContentsController {
   @Get()
-  async getList(): Promise<Content[]> {
-    const contents = await Content.findAll();
+  async getList(@Query() params: ContentQueryParams): Promise<Content[]> {
+    const orderBy: string = params.orderBy || 'id';
+    const orderType: string = params.orderType || 'desc';
+    const limit: number = Number(params.limit) || 1;
+    const offset: number = Number(params.offset) || 0;
+    console.log(typeof limit);
+    console.log(limit, offset);
+    const contents = await Content.findAll({
+      order: [[orderBy, orderType]],
+      limit: limit,
+      offset,
+    });
     return contents;
   }
   @Post()

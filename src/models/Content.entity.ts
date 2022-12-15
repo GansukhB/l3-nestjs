@@ -1,5 +1,14 @@
-import { Table, Column, Model, HasMany } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  HasMany,
+  HasOne,
+  BelongsTo,
+  ForeignKey,
+} from 'sequelize-typescript';
 import { Col } from 'sequelize/types/utils';
+import Category from './Category.entity';
 
 @Table({
   tableName: 'contents',
@@ -16,5 +25,12 @@ class Content extends Model {
 
   @Column
   view_count: number;
+
+  @ForeignKey(() => Category)
+  @Column
+  categoryId: number;
+
+  @BelongsTo(() => Category, { foreignKey: 'categoryId' })
+  category: Category;
 }
 export default Content;

@@ -8,6 +8,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import Category from 'src/models/Category.entity';
 import Content from 'src/models/Content.entity';
 import { ContentQueryParams, ContentBody } from './contents.dto';
 
@@ -25,6 +26,7 @@ export class ContentsController {
       order: [[orderBy, orderType]],
       limit: limit,
       offset,
+      include: [Category],
     });
     return contents;
   }

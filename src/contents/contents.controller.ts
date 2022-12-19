@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import Category from 'src/models/Category.entity';
 import Content from 'src/models/Content.entity';
+import ContentTag from 'src/models/ContentTag.entity';
+import Tag from 'src/models/Tag.entity';
 import { ContentQueryParams, ContentBody } from './contents.dto';
 
 @Controller('contents')
@@ -26,7 +28,7 @@ export class ContentsController {
       order: [[orderBy, orderType]],
       limit: limit,
       offset,
-      include: [Category],
+      include: [Category, Tag],
     });
     return contents;
   }

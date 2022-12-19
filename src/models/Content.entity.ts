@@ -5,9 +5,12 @@ import {
   HasMany,
   ForeignKey,
   BelongsTo,
+  BelongsToMany,
 } from 'sequelize-typescript';
 import { Col } from 'sequelize/types/utils';
 import Category from './Category.entity';
+import ContentTag from './ContentTag.entity';
+import Tag from './Tag.entity';
 
 @Table({
   tableName: 'contents',
@@ -31,5 +34,8 @@ class Content extends Model {
 
   @BelongsTo(() => Category, { foreignKey: 'categoryId' })
   category: Category;
+
+  @BelongsToMany(() => Tag, () => ContentTag)
+  tags: Array<Tag & { ContentTag: ContentTag }>;
 }
 export default Content;

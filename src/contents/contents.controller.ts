@@ -7,12 +7,14 @@ import {
   Post,
   Put,
   Query,
+  Redirect,
 } from '@nestjs/common';
 import Category from 'src/models/Category.entity';
 import Content from 'src/models/Content.entity';
 import ContentTag from 'src/models/ContentTag.entity';
 import Tag from 'src/models/Tag.entity';
 import { ContentQueryParams, ContentBody } from './contents.dto';
+import redisClient from 'src/redis';
 
 @Controller('contents')
 export class ContentsController {
@@ -24,13 +26,37 @@ export class ContentsController {
     const offset: number = Number(params.offset) || 0;
     console.log(typeof limit);
     console.log(limit, offset);
-    const contents = await Content.findAll({
-      order: [[orderBy, orderType]],
-      limit: limit,
-      offset,
-      include: [Category, Tag],
-    });
-    return contents;
+
+    const combinedKey =
+      'orderBy' +
+      orderBy +
+      'orderType' +
+      orderType +
+      'limit' +
+      limit +
+      'offset' +
+      offset;
+
+    const cacheResult = await redisClient.hget('contentList', combinedKey);
+    if (cacheResult) {
+      console.log(cacheResult);
+      console.log('cache hit');
+      return JSON.parse(cacheResult) as Content[];
+    } else {
+      console.log('cache missed');
+      const contents = await Content.findAll({
+        order: [[orderBy, orderType]],
+        limit: limit,
+        offset,
+        include: [Category, Tag],
+      });
+      await redisClient.hset(
+        'contentList',
+        combinedKey,
+        JSON.stringify(contents),
+      );
+      return contents;
+    }
   }
   @Post()
   async createPost(@Body() body: any): Promise<Content> {
@@ -41,6 +67,7 @@ export class ContentsController {
     content.title = title;
     content.body = contentBody;
     await content.save();
+    await redisClient.del('contentList');
     return content;
   }
 
